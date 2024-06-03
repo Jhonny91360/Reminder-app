@@ -41,7 +41,7 @@ export default function HomeScreen() {
         style={styles.button}
         onPress={() => Alert.alert("Otro botón alerta")}
       >
-        <Text style={{ color: "white" }}>Otro botón</Text>
+        <Text style={{ color: "white" }}>Probando commmit</Text>
       </TouchableOpacity>
 
       <ThemedView style={styles.stepContainer}>
