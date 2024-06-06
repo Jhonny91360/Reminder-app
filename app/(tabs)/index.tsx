@@ -39,7 +39,7 @@ export default function HomeScreen() {
         <Button
           title="Entrar"
           color={"#032757"}
-          onPress={() => router.push("/explore")}
+          onPress={() => router.push("/notes")}
         ></Button>
       </View>
     </View>

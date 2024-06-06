@@ -4,11 +4,11 @@
     "slug": "reminder-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/splash-reminder.png",
+    "icon": "./assets/images/react-logo.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/images/splash-intro.jpg",
+      "image": "./assets/images/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,7 +19,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.jhonny91360.reminderapp"
     },
     "web": {
       "bundler": "metro",
@@ -29,6 +30,14 @@
     "plugins": ["expo-router"],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "9e0a5db3-888c-4518-8553-0d771032fb40"
+      }
     }
   }
 }
