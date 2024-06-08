@@ -7,6 +7,7 @@ import {
   Text,
   TouchableOpacity,
   Alert,
+  Button,
 } from "react-native";
 
 import { Collapsible } from "@/components/Collapsible";
@@ -16,8 +17,19 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import NoteCard from "@/components/cards/noteCard";
 import { router } from "expo-router";
+import { useEffect } from "react";
+import {
+  deleteAllNotes,
+  initializeDB,
+  readAllNotes,
+} from "@/utils/dbFunctions/crud";
 
 export default function TabTwoScreen() {
+  useEffect(() => {
+    console.log("Entrando al useEffect");
+    initializeDB();
+  }, []);
+
   return (
     <View style={styles.mainContainer}>
       <View style={styles.header}>
@@ -36,6 +48,8 @@ export default function TabTwoScreen() {
       <NoteCard title="Segunda nota" time="Domingo 11:00am" />
       <NoteCard title="Tercera nota" time="Lunes 05:00pm" />
       <NoteCard title="Cuarta nota" time="Martes 02:00pm" />
+      <Button title="Leer datos" onPress={readAllNotes} />
+      <Button title="Resetar db" onPress={deleteAllNotes} />
     </View>
     // <ParallaxScrollView
     //   headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
