@@ -36,8 +36,8 @@ const AddNote = () => {
     <View style={styles.mainContainer}>
       <View style={styles.header}>
 
-      </View>
       <Text style={styles.pageTitle}> Nueva nota</Text>
+      </View>
       <FormikProvider value={newNoteFormik}>
         <TextInput
           style={styles.inputText}
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent:'space-between',
-    height:'10%', 
+    height:'15%', 
     verticalAlign:'middle'
   }, 
   pageTitle:{

@@ -1,4 +1,5 @@
 import Ionicons from "@expo/vector-icons/Ionicons";
+
 import {
   StyleSheet,
   Image,
@@ -32,24 +33,22 @@ export default function TabTwoScreen() {
 
   return (
     <View style={styles.mainContainer}>
-      <View style={styles.header}>
-        <Text style={{ color: "dark", fontSize: 24 }}>Archivador de notas</Text>
-
-        <TouchableOpacity
-          style={styles.buttonAdd}
-          onPress={() => router.push("/addNote")}
-        >
-          <Text style={{ color: "dark", fontSize: 54, marginBottom: 10 }}>
-            +
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <NoteCard title="Primera nota" time="Jueves 08:00pm" />
-      <NoteCard title="Segunda nota" time="Domingo 11:00am" />
-      <NoteCard title="Tercera nota" time="Lunes 05:00pm" />
-      <NoteCard title="Cuarta nota" time="Martes 02:00pm" />
-      <Button title="Leer datos" onPress={readAllNotes} />
-      <Button title="Resetar db" onPress={deleteAllNotes} />
+        <View style={styles.header}>
+          <Text style={styles.pageTitle}>Notas en progreso</Text>
+          <Ionicons name="add-circle-outline" style={styles.btnAdd} onPress={() => router.push("/addNote") }/>
+        </View>
+        <View style={styles.listado}>
+            <NoteCard title="Primera nota" time="Jueves 08:00pm" />
+            <NoteCard title="Segunda nota" time="Domingo 11:00am" />
+            <NoteCard title="Tercera nota" time="Lunes 05:00pm" />
+            <NoteCard title="Cuarta nota" time="Martes 02:00pm" />
+        </View> 
+      <View style={styles.footer}>
+  
+        <Button color='#032757' title="Leer datos" onPress={readAllNotes} />
+        <Button color='#032757' title="Resetar db" onPress={deleteAllNotes} />
+      </View> 
+      
     </View>
     // <ParallaxScrollView
     //   headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -145,29 +144,60 @@ export default function TabTwoScreen() {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    bottom: -40,
-    backgroundColor: "mintcream",
-    display: "flex",
+    top:50,
+    flex:1,
     flexDirection: "column",
-    gap: 10,
-    paddingHorizontal: 10,
+    
+    gap:10
+    
   },
-  buttonAdd: {
-    backgroundColor: "lightgray",
-    borderWidth: 2,
-    borderColor: "black",
-    borderRadius: 50,
-    width: 80,
-    height: 80,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-  },
+
   header: {
-    display: "flex",
     flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
+    justifyContent:'space-between',
+    height:'10%', 
+    verticalAlign:'middle'
+    
+    
+
+  }, 
+  pageTitle:{
+    flex:4,
+    verticalAlign:'middle',
+    fontSize:30, 
+    fontWeight: "bold",
+    color: "deepskyblue",
+    textAlign:'center',
+    textAlignVertical:'center'
+
+    
   },
+  btnAdd:{
+    flex:1,
+    verticalAlign:'middle',
+    fontSize:40, 
+    fontWeight: "bold",
+    color: "#032757",
+    textAlign:'center'
+  },
+  footer:{
+    flexDirection: "column",
+    gap:5, 
+    verticalAlign:'bottom',height:'15%'
+
+
+    
+    
+  },
+  button:{
+    flex:1,
+    
+    },
+  listado:{
+     flexDirection: "column",
+     height:'70%'
+    
+    
+  }
+
 });
