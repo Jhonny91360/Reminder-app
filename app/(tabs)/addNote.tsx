@@ -34,7 +34,10 @@ const AddNote = () => {
 
   return (
     <View style={styles.mainContainer}>
-      <Text> Nueva nota</Text>
+      <View style={styles.header}>
+
+      </View>
+      <Text style={styles.pageTitle}> Nueva nota</Text>
       <FormikProvider value={newNoteFormik}>
         <TextInput
           style={styles.inputText}
@@ -49,7 +52,7 @@ const AddNote = () => {
           placeholder="Descripción"
           multiline
         />
-        <Button title="Guardar" onPress={onSubmit} />
+        <Button title="Guardar" color='#032757' onPress={onSubmit} />
       </FormikProvider>
     </View>
   );
@@ -73,6 +76,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 10,
   },
+  header: {
+    flexDirection: "row",
+    justifyContent:'space-between',
+    height:'10%', 
+    verticalAlign:'middle'
+  }, 
+  pageTitle:{
+    flex:4,
+    verticalAlign:'middle',
+    fontSize:30, 
+    fontWeight: "bold",
+    color: "deepskyblue",
+    textAlign:'center',
+    textAlignVertical:'center'
+
+    
+  }
+
 });
 
 export default AddNote;
