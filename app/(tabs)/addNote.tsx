@@ -1,7 +1,6 @@
 import { addNote } from "@/utils/dbFunctions/crud";
-import { router } from "expo-router";
 import { FormikProvider, useFormik } from "formik";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import {
   Alert,
   Button,
@@ -17,6 +16,7 @@ import * as Device from "expo-device";
 import Constants from "expo-constants";
 import DatePickerComponent from "@/components/datePicker/datePicker";
 
+// Configuración inicial de notificaciones
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
@@ -34,106 +34,116 @@ const AddNote = () => {
   const [key, setKey] = useState(0);
   const [date, setDate] = useState(new Date());
 
-  //notificaciones
-  const [expoPushToken, setExpoPushToken] = useState("");
-  const [channels, setChannels] = useState<Notifications.NotificationChannel[]>(
-    []
-  );
-  const [notification, setNotification] = useState<
-    Notifications.Notification | undefined
-  >(undefined);
-  const notificationListener = useRef<Notifications.Subscription>();
-  const responseListener = useRef<Notifications.Subscription>();
+  const [expoPushToken, setExpoPushToken] = useState<string>("");
+  const [notification, setNotification] = useState<Notifications.Notification | undefined>(undefined);
+  const notificationListener = useRef<Notifications.Subscription | null>(null);
+  const responseListener = useRef<Notifications.Subscription | null>(null);
 
-  const onSubmit = async () => {
-    if (!newNoteFormik.values.title || !newNoteFormik.values.description)
-      return Alert.alert("Debe llenar los campos");
-    const response = await addNote(
-      newNoteFormik.values.title,
-      newNoteFormik.values.description
-    );
-    console.log("LA repuesta del crud: ", response);
-    schedulePushNotification(
-      date,
-      newNoteFormik.values.title,
-      newNoteFormik.values.description
-    );
-    clearFields();
-    //seteandoAlarma();
-    router.push("/notes");
-  };
+  const clearFields = useCallback(() => {
+    formik.resetForm();
+    setKey((prevKey) => prevKey + 1);
+  }, [formik]);
 
-  const clearFields = () => {
-    newNoteFormik.values.title = "";
-    newNoteFormik.values.description = "";
-    setKey((preValue) => preValue + 1);
-  };
+  const onSubmit = useCallback(async () => {
+    try {
+      await formik.validateForm();
+      await formik.submitForm();
 
-  const newNoteFormik = useFormik<FormValues>({
+      // Añadir nota a la base de datos
+      const response = await addNote(
+        formik.values.title,
+        formik.values.description
+      );
+      console.log("Respuesta del CRUD: ", response);
+
+      // Programar notificación
+      schedulePushNotification(
+        date,
+        formik.values.title,
+        formik.values.description
+      );
+
+      // Limpiar campos
+      clearFields();
+
+      // Navegar a la pantalla de notas (debes manejar la navegación según tu stack de navegación)
+      // router.push("/notes");
+
+    } catch (error) {
+      if (error instanceof Yup.ValidationError) {
+        Alert.alert("Error de validación", error.message);
+      } else {
+        console.error("Error al enviar el formulario", error);
+        Alert.alert("Error", "Ocurrió un error al enviar el formulario");
+      }
+    }
+  }, [formik, clearFields, date]);
+
+  const formik = useFormik<FormValues>({
     initialValues: {
       title: "",
       description: "",
     },
     validationSchema: Yup.object({
       title: Yup.string().required("Ingrese un título"),
-      description: Yup.string().required("Agruegue una descripción"),
+      description: Yup.string().required("Agregue una descripción"),
     }),
-    onSubmit,
+    onSubmit: () => {}, // onSubmit se maneja en el método onSubmit() definido arriba
   });
 
-  //Useeffect notificaciones
   useEffect(() => {
-    registerForPushNotificationsAsync().then(
-      (token) => token && setExpoPushToken(token)
-    );
+    registerForPushNotificationsAsync().then((token) => setExpoPushToken(token));
 
+    // Obtener canales de notificación en Android
     if (Platform.OS === "android") {
       Notifications.getNotificationChannelsAsync().then((value) =>
-        setChannels(value ?? [])
+        value && setChannels(value)
       );
     }
-    notificationListener.current =
-      Notifications.addNotificationReceivedListener((notification) => {
-        setNotification(notification);
-      });
 
-    responseListener.current =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log(response);
-      });
+    // Manejar notificaciones recibidas
+    notificationListener.current = Notifications.addNotificationReceivedListener((notification) => {
+      setNotification(notification);
+    });
 
+    // Manejar respuesta a notificaciones
+    responseListener.current = Notifications.addNotificationResponseReceivedListener((response) => {
+      console.log(response);
+    });
+
+    // Limpiar suscripciones
     return () => {
-      notificationListener.current &&
-        Notifications.removeNotificationSubscription(
-          notificationListener.current
-        );
-      responseListener.current &&
-        Notifications.removeNotificationSubscription(responseListener.current);
+      notificationListener.current && notificationListener.current.remove();
+      responseListener.current && responseListener.current.remove();
     };
   }, []);
 
-  ///
-
-  console.log("valores formik: ", newNoteFormik.values);
-
   return (
-    <View style={styles.mainContainer} key={key}>
-      <Text> Nueva nota</Text>
-      <FormikProvider value={newNoteFormik}>
+    <View style={styles.container}>
+      <Text style={styles.header}>Nueva nota</Text>
+      <FormikProvider value={formik}>
         <TextInput
-          style={styles.inputText}
-          onChangeText={newNoteFormik.handleChange("title")}
-          value={newNoteFormik.values.title}
+          style={styles.input}
+          onChangeText={formik.handleChange("title")}
+          onBlur={formik.handleBlur("title")}
+          value={formik.values.title}
           placeholder="Título"
         />
+        {formik.touched.title && formik.errors.title &&
+          <Text style={styles.errorText}>{formik.errors.title}</Text>
+        }
         <TextInput
-          style={styles.inputTextArea}
-          onChangeText={newNoteFormik.handleChange("description")}
-          value={newNoteFormik.values.description}
+          style={[styles.input, styles.multiline]}
+          onChangeText={formik.handleChange("description")}
+          onBlur={formik.handleBlur("description")}
+          value={formik.values.description}
           placeholder="Descripción"
           multiline
         />
-        <View style={{ height: 300 }}>
+        {formik.touched.description && formik.errors.description &&
+          <Text style={styles.errorText}>{formik.errors.description}</Text>
+        }
+        <View style={styles.datePickerContainer}>
           <DatePickerComponent
             dateProp={date}
             setDateProp={(value: Date) => setDate(value)}
@@ -150,7 +160,7 @@ async function schedulePushNotification(
   title: string,
   description: string
 ) {
-  console.log("fecha escogida: ", dateValue.toString());
+  console.log("Fecha escogida: ", dateValue.toString());
   await Notifications.scheduleNotificationAsync({
     content: {
       title: title,
@@ -162,7 +172,7 @@ async function schedulePushNotification(
 }
 
 async function registerForPushNotificationsAsync() {
-  let token;
+  let token = "";
 
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("default", {
@@ -173,61 +183,73 @@ async function registerForPushNotificationsAsync() {
     });
   }
 
-  if (Device.isDevice) {
-    const { status: existingStatus } =
-      await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-    if (existingStatus !== "granted") {
-      const { status } = await Notifications.requestPermissionsAsync();
-      finalStatus = status;
-    }
-    if (finalStatus !== "granted") {
-      alert("Failed to get push token for push notification!");
-      return;
+  const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  let finalStatus = existingStatus;
+
+  if (existingStatus !== "granted") {
+    const { status } = await Notifications.requestPermissionsAsync();
+    finalStatus = status;
+  }
+
+  if (finalStatus !== "granted") {
+    console.log("Permission to receive notifications was not granted");
+    return token;
+  }
+
+  try {
+    const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+
+    if (!projectId) {
+      throw new Error("Project ID not found");
     }
 
-    try {
-      const projectId =
-        Constants?.expoConfig?.extra?.eas?.projectId ??
-        Constants?.easConfig?.projectId;
-      if (!projectId) {
-        throw new Error("Project ID not found");
-      }
-      token = (
-        await Notifications.getExpoPushTokenAsync({
-          projectId,
-        })
-      ).data;
-      console.log(token);
-    } catch (e) {
-      token = `${e}`;
-    }
-  } else {
-    alert("Must use physical device for Push Notifications");
+    token = (await Notifications.getExpoPushTokenAsync({
+      projectId,
+    })).data;
+
+    console.log("Expo Push Token:", token);
+
+  } catch (error) {
+    console.error("Error getting Expo Push token:", error);
+    token = "";
   }
 
   return token;
 }
 
 const styles = StyleSheet.create({
-  mainContainer: {
-    top: 40,
-    display: "flex",
-    flexDirection: "column",
-    gap: 8,
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 16,
+    paddingTop: Platform.OS === "android" ? Constants.statusBarHeight + 20 : 0,
   },
-  inputText: {
+  header: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  input: {
     height: 40,
-    margin: 12,
+    borderColor: "#ccc",
     borderWidth: 1,
-    padding: 10,
+    paddingHorizontal: 10,
+    marginBottom: 10,
   },
-  inputTextArea: {
+  multiline: {
     height: 80,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
+    textAlignVertical: "top",
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
+  },
+  datePickerContainer: {
+    height: 300,
+    marginBottom: 20,
   },
 });
 
 export default AddNote;
+
