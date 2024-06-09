@@ -1,57 +1,116 @@
-import { Tabs } from "expo-router";
-import React from "react";
+import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { Ionicons } from '@expo/vector-icons';
+import { useTheme } from '@react-navigation/native';
+import { Text, View, StyleSheet } from 'react-native';
 
-import { TabBarIcon } from "@/components/navigation/TabBarIcon";
-import { Colors } from "@/constants/Colors";
-import { useColorScheme } from "@/hooks/useColorScheme";
-import { Text, View } from "react-native";
+const Tab = createBottomTabNavigator();
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+const TabLayout = () => {
+  const { colors } = useTheme();
+
+  const tabIcons = {
+    Inicio: {
+      focused: 'home',
+      unfocused: 'home-outline',
+    },
+    Notas: {
+      focused: 'document',
+      unfocused: 'document-outline',
+    },
+    Crear: {
+      focused: 'add-circle',
+      unfocused: 'add-circle-outline',
+    },
+  };
+
+  const renderTabBarIcon = (name, focused, color) => {
+    const { focused: focusedIcon, unfocused: unfocusedIcon } = tabIcons[name];
+    const iconName = focused ? focusedIcon : unfocusedIcon;
+    return <Ionicons name={iconName} size={24} color={color} />;
+  };
 
   return (
-    <Tabs
-      screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? "light"].tint,
-        headerShown: false,
+    <Tab.Navigator
+      tabBarOptions={{
+        activeTintColor: colors.primary,
+        inactiveTintColor: colors.text,
+        labelStyle: styles.labelStyle,
+        style: styles.tabBarStyle,
       }}
     >
-      <Tabs.Screen
-        name="index"
+      <Tab.Screen
+        name="Inicio"
+        component={InicioScreen}
         options={{
-          title: "Inicio",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "home" : "home-outline"}
-              color={color}
-            />
-          ),
+          tabBarIcon: ({ focused, color }) => renderTabBarIcon('Inicio', focused, color),
         }}
       />
-      <Tabs.Screen
-        name="notes"
+      <Tab.Screen
+        name="Notas"
+        component={NotasScreen}
         options={{
-          title: "Notas",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "document" : "document-outline"}
-              color={color}
-            />
-          ),
+          tabBarIcon: ({ focused, color }) => renderTabBarIcon('Notas', focused, color),
         }}
       />
-      <Tabs.Screen
-        name="addNote"
+      <Tab.Screen
+        name="Crear"
+        component={CrearScreen}
         options={{
-          title: "Crear",
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon
-              name={focused ? "add-sharp" : "add-sharp"}
-              color={color}
-            />
-          ),
+          tabBarIcon: ({ focused, color }) => renderTabBarIcon('Crear', focused, color),
         }}
       />
-    </Tabs>
+    </Tab.Navigator>
   );
-}
+};
+
+const InicioScreen = () => {
+  return (
+    <View style={styles.screenContainer}>
+      <Text style={styles.screenText}>Inicio Screen</Text>
+    </View>
+  );
+};
+
+const NotasScreen = () => {
+  return (
+    <View style={styles.screenContainer}>
+      <Text style={styles.screenText}>Notas Screen</Text>
+    </View>
+  );
+};
+
+const CrearScreen = () => {
+  return (
+    <View style={styles.screenContainer}>
+      <Text style={styles.screenText}>Crear Screen</Text>
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  tabBarStyle: {
+    backgroundColor: '#ffffff',
+    borderTopWidth: 1,
+    borderTopColor: '#dddddd',
+    paddingTop: 5,
+  },
+  labelStyle: {
+    fontSize: 12,
+    marginBottom: 3,
+  },
+  screenContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+  },
+  screenText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333333',
+  },
+});
+
+export default TabLayout;
+
