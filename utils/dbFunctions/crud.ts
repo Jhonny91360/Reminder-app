@@ -6,8 +6,6 @@ export const initializeDB = async () => {
   await db.execAsync(`
       PRAGMA journal_mode = WAL;
       CREATE TABLE IF NOT EXISTS note (id INTEGER PRIMARY KEY NOT NULL, title TEXT NOT NULL, description TEXT NOT NULL);
-      INSERT INTO note (title, description) VALUES ('Primera nota', '123');
-
       `);
 };
 

@@ -38,25 +38,31 @@ export default function DatePickerComponent({ dateProp, setDateProp }: Props) {
     showMode(Mode.TIME);
   };
   return (
-    <View style={styles.container}>
-      <SafeAreaView>
-        <View>
-          <Button onPress={showDatepicker} title="Show date picker!" />
-        </View>
-        <View style={{ marginTop: 30 }}>
-          <Button onPress={showTimepicker} title="Show time picker!" />
+    <View>
+      <SafeAreaView style={styles.container}>
+        <View style={styles.buttonsContainer}>
+          <Button
+            onPress={showDatepicker}
+            title="Seleccionar fecha"
+            color={"blueviolet"}
+          />
+
+          <Button
+            onPress={showTimepicker}
+            title="Seleccionar hora"
+            color={"blueviolet"}
+          />
         </View>
 
         <Text
           style={{
-            marginTop: 20,
-            backgroundColor: "blue",
+            backgroundColor: "blueviolet",
             padding: 20,
             color: "white",
             borderRadius: 10,
           }}
         >
-          selected: {date.toLocaleString()}
+          Fecha seleccionada: {date.toLocaleString()}
         </Text>
         {show && (
           <DateTimePicker
@@ -74,10 +80,17 @@ export default function DatePickerComponent({ dateProp, setDateProp }: Props) {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: "blueviolet",
+    display: "flex",
+    flexDirection: "row",
+    gap: 10,
     alignItems: "center",
     justifyContent: "center",
-    height: 300,
+    height: 100,
+    paddingHorizontal: 90,
+  },
+  buttonsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
   },
 });
