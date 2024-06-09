@@ -1,158 +1,59 @@
-import {
-  Image,
-  StyleSheet,
-  Platform,
-  Button,
-  Alert,
-  TouchableOpacity,
-  Text,
-  View,
-} from "react-native";
-
-import { HelloWave } from "@/components/HelloWave";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { Link, router } from "expo-router";
+import React from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 export default function HomeScreen() {
+  const navigation = useNavigation();
+
+  const handleNavigate = () => {
+    navigation.navigate("Notes");
+  };
+
   return (
     <View style={styles.container}>
       <Image
-        style={{ borderRadius: 10 }}
+        style={styles.image}
         source={require("@/assets/images/splash-reminder.png")}
-      ></Image>
+      />
       <Text style={styles.appTitle}>Reminder</Text>
-
-      {/* <Link href={"/explore"} style={styles.buttonContainer}>
-        <Text
-          style={{
-            marginHorizontal: "auto",
-            backgroundColor: "red",
-            marginLeft: 78,
-          }}
-        >
-          Entrar
-        </Text>
-      </Link> */}
-      <View style={styles.buttonContainer}>
-        <Button
-          title="Entrar"
-          color={"#032757"}
-          onPress={() => router.push("/notes")}
-        ></Button>
-      </View>
+      <TouchableOpacity style={styles.button} onPress={handleNavigate}>
+        <Text style={styles.buttonText}>Entrar</Text>
+      </TouchableOpacity>
     </View>
-
-    //   <ParallaxScrollView
-    //     headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-    //     headerImage={
-    //       <Image
-    //         //source={require("@/assets/images/partial-react-logo.png")}
-    //         // source={{
-    //         //   uri: "https://images-ng.pixai.art/images/thumb/a9dbf982-a070-475b-a234-a6bb95e4808c",
-    //         // }}
-    //         source={require("@/assets/images/uzui.png")}
-    //         style={styles.reactLogo}
-    //       />
-    //     }
-    //   >
-    //     <ThemedView style={styles.titleContainer}>
-    //       <ThemedText type="title">Reminder app!</ThemedText>
-    //       <HelloWave />
-    //     </ThemedView>
-    //     <Button
-    //       title="Entrar"
-    //       color={"purple"}
-    //       onPress={() => Alert.alert("Bienvenido")}
-    //     ></Button>
-    //     <TouchableOpacity
-    //       style={styles.button}
-    //       onPress={() => Alert.alert("Otro botón alerta")}
-    //     >
-    //       <Text style={{ color: "white" }}>Probando commmit</Text>
-    //     </TouchableOpacity>
-
-    //     <ThemedView style={styles.stepContainer}>
-    //       <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-    //       <ThemedText>
-    //         Edit{" "}
-    //         <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
-    //         to see changes. Press{" "}
-    //         <ThemedText type="defaultSemiBold">
-    //           {Platform.select({ ios: "cmd + d", android: "cmd + m" })}
-    //         </ThemedText>{" "}
-    //         to open developer tools.
-    //       </ThemedText>
-    //     </ThemedView>
-    //     <ThemedView style={styles.stepContainer}>
-    //       <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-    //       <ThemedText>
-    //         Tap the Explore tab to learn more about what's included in this
-    //         starter app.
-    //       </ThemedText>
-    //     </ThemedView>
-    //     <ThemedView style={styles.stepContainer}>
-    //       <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-    //       <ThemedText>
-    //         When you're ready, run{" "}
-    //         <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText>{" "}
-    //         to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{" "}
-    //         directory. This will move the current{" "}
-    //         <ThemedText type="defaultSemiBold">app</ThemedText> to{" "}
-    //         <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-    //       </ThemedText>
-    //     </ThemedView>
-    //   </ParallaxScrollView>
-    // );
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    display: "flex",
+    flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    height: "100%",
-    gap: 14,
+    backgroundColor: "#FFFFFF",
+    padding: 20,
+  },
+  image: {
+    width: 200,
+    height: 200,
+    borderRadius: 10,
+    marginBottom: 20,
   },
   appTitle: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "deepskyblue",
+    color: "#032757", // Cambiado el color a un tono más oscuro para mejor contraste
+    marginBottom: 20,
   },
-  buttonContainer: {
-    width: "80%",
-    borderRadius: 10,
-    overflow: "hidden",
+  button: {
+    backgroundColor: "#032757",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+    elevation: 3, // Agregado elevación para un efecto de botón más realista en Android
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
-
-// const styles = StyleSheet.create({
-//   titleContainer: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     gap: 8,
-//   },
-//   stepContainer: {
-//     gap: 8,
-//     marginBottom: 8,
-//   },
-//   reactLogo: {
-//     height: 278,
-//     width: 400,
-//     bottom: 0,
-//     left: 0,
-//     position: "absolute",
-//   },
-//   button: {
-//     height: 50,
-//     width: 300,
-//     backgroundColor: "red",
-//     display: "flex",
-//     justifyContent: "center",
-//     alignItems: "center",
-//     borderRadius: 10,
-//     color: "white",
-//   },
-// });
