@@ -8,6 +8,7 @@ import {
   TouchableOpacity,
   Alert,
   Button,
+  ScrollView,
 } from "react-native";
 
 import { Collapsible } from "@/components/Collapsible";
@@ -16,20 +17,32 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import NoteCard from "@/components/cards/noteCard";
-import { router } from "expo-router";
-import { useEffect } from "react";
+import { router, usePathname } from "expo-router";
+import { useEffect, useState } from "react";
 import {
   deleteAllNotes,
   initializeDB,
   readAllNotes,
 } from "@/utils/dbFunctions/crud";
+import { Note } from "@/interfaces/interfaces";
 
 export default function TabTwoScreen() {
+  const pathname = usePathname();
+  const [notes, setNotes] = useState<Note[]>();
+
   useEffect(() => {
     console.log("Entrando al useEffect");
     initializeDB();
   }, []);
 
+  useEffect(() => {
+    getNotes();
+  }, [pathname]);
+
+  const getNotes = async () => {
+    const response = await readAllNotes();
+    if (response) setNotes(response);
+  };
   return (
     <View style={styles.mainContainer}>
       <View style={styles.header}>
@@ -44,12 +57,29 @@ export default function TabTwoScreen() {
           </Text>
         </TouchableOpacity>
       </View>
-      <NoteCard title="Primera nota" time="Jueves 08:00pm" />
+      <ScrollView style={styles.cardsContainer}>
+        {notes?.map((note) => {
+          return (
+            <NoteCard
+              key={note.id}
+              title={note.title}
+              time={note.description}
+            />
+          );
+        })}
+      </ScrollView>
+      {/* <NoteCard title="Primera nota" time="Jueves 08:00pm" />
       <NoteCard title="Segunda nota" time="Domingo 11:00am" />
       <NoteCard title="Tercera nota" time="Lunes 05:00pm" />
-      <NoteCard title="Cuarta nota" time="Martes 02:00pm" />
+      <NoteCard title="Cuarta nota" time="Martes 02:00pm" /> */}
       <Button title="Leer datos" onPress={readAllNotes} />
-      <Button title="Resetar db" onPress={deleteAllNotes} />
+      <Button
+        title="Resetar db"
+        onPress={() => {
+          deleteAllNotes();
+          getNotes();
+        }}
+      />
     </View>
     // <ParallaxScrollView
     //   headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -145,12 +175,13 @@ export default function TabTwoScreen() {
 
 const styles = StyleSheet.create({
   mainContainer: {
-    bottom: -40,
+    //bottom: -40,
     backgroundColor: "mintcream",
     display: "flex",
     flexDirection: "column",
     gap: 10,
     paddingHorizontal: 10,
+    paddingTop: 40,
   },
   buttonAdd: {
     backgroundColor: "lightgray",
@@ -169,5 +200,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     gap: 8,
+  },
+  cardsContainer: {
+    display: "flex",
+    flexDirection: "column",
+    gap: 10,
+    height: "100%",
+    maxHeight: 450,
   },
 });

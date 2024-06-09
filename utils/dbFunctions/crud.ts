@@ -1,3 +1,4 @@
+import { Note } from "@/interfaces/interfaces";
 import * as SQLite from "expo-sqlite";
 
 export const initializeDB = async () => {
@@ -6,21 +7,22 @@ export const initializeDB = async () => {
       PRAGMA journal_mode = WAL;
       CREATE TABLE IF NOT EXISTS note (id INTEGER PRIMARY KEY NOT NULL, title TEXT NOT NULL, description TEXT NOT NULL);
       INSERT INTO note (title, description) VALUES ('Primera nota', '123');
-      INSERT INTO note (title, description) VALUES ('Segunda nota', '456');
-      INSERT INTO note (title, description) VALUES ('Tercera nota', '789');
+
       `);
 };
 
 export const readAllNotes = async () => {
   const db = await SQLite.openDatabaseAsync("reminderDB");
-  const allRows = await db.getAllAsync("SELECT * FROM note");
-  if (allRows.length) {
-    for (const row of allRows) {
-      console.log(row);
-    }
-  } else {
-    console.log("Resultado: ", allRows);
-  }
+  const allRows: Note[] = await db.getAllAsync("SELECT * FROM note");
+  return allRows;
+  // if (allRows.length) {
+  //   // for (const row of allRows) {
+  //   //   console.log(row);
+  //   // }
+  //   console.log("Resultado: ", allRows);
+  // } else {
+  //   console.log("No hay resultados");
+  // }
 };
 
 export const deleteAllNotes = async () => {
