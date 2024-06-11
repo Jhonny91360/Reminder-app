@@ -1,3 +1,4 @@
+import Ionicons from "@expo/vector-icons/Ionicons";
 import { addNote } from "@/utils/dbFunctions/crud";
 import { router } from "expo-router";
 import { FormikProvider, useFormik } from "formik";
@@ -118,19 +119,22 @@ const AddNote = () => {
 
   return (
     <View style={styles.mainContainer} key={key}>
-      <Text> Nueva nota</Text>
+      
       <FormikProvider value={newNoteFormik}>
+      <View style={styles.header}>
+        <Text style={styles.pageTitle}>Nueva nota</Text>
+      </View>
         <TextInput
           style={styles.inputText}
           onChangeText={newNoteFormik.handleChange("title")}
           value={newNoteFormik.values.title}
-          placeholder="Título"
+          placeholder="Ingrese el titulo de la nota"
         />
         <TextInput
           style={styles.inputTextArea}
           onChangeText={newNoteFormik.handleChange("description")}
           value={newNoteFormik.values.description}
-          placeholder="Descripción"
+          placeholder="Ingrese la Descripcion"
           multiline
         />
         <View style={{ height: 300 }}>
@@ -221,12 +225,31 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
+    borderRadius:5
   },
   inputTextArea: {
     height: 80,
     margin: 12,
     borderWidth: 1,
     padding: 10,
+    borderRadius:5, 
+  },
+  pageTitle:{
+    flex:4,
+    verticalAlign:'middle',
+    fontSize:30, 
+    fontWeight: "bold",
+    color: "deepskyblue",
+    textAlign:'center',
+    textAlignVertical:'center'
+
+
+  },
+  header: {
+    flexDirection: "row",
+    justifyContent:'space-between',
+    height:'10%', 
+    verticalAlign:'middle'
   },
 });
 
