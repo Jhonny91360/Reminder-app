@@ -46,16 +46,8 @@ export default function TabTwoScreen() {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.header}>
-        <Text style={{ color: "dark", fontSize: 24 }}>Archivador de notas</Text>
-
-        <TouchableOpacity
-          style={styles.buttonAdd}
-          onPress={() => router.push("/addNote")}
-        >
-          <Text style={{ color: "dark", fontSize: 54, marginBottom: 10 }}>
-            +
-          </Text>
-        </TouchableOpacity>
+        <Text style={styles.pageTitle}>Notas en progreso</Text>
+        <Ionicons name="add-circle-outline" style={styles.btnAdd} onPress={() => router.push("/addNote") }/>
       </View>
       <ScrollView style={styles.cardsContainer}>
         {notes?.map((note) => {
@@ -72,14 +64,16 @@ export default function TabTwoScreen() {
       <NoteCard title="Segunda nota" time="Domingo 11:00am" />
       <NoteCard title="Tercera nota" time="Lunes 05:00pm" />
       <NoteCard title="Cuarta nota" time="Martes 02:00pm" /> */}
-      <Button title="Leer datos" onPress={readAllNotes} />
-      <Button
-        title="Resetar db"
-        onPress={() => {
-          deleteAllNotes();
-          getNotes();
-        }}
-      />
+      <View style={styles.footer}>
+        <Button title="Leer datos" onPress={readAllNotes} />
+        <Button
+          title="Resetar db"
+          onPress={() => {
+            deleteAllNotes();
+            getNotes();
+            }}
+            />
+      </View>
     </View>
     // <ParallaxScrollView
     //   headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
@@ -195,11 +189,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   header: {
-    display: "flex",
     flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
+    justifyContent:'space-between',
+    height:'10%', 
+    verticalAlign:'middle'
   },
   cardsContainer: {
     display: "flex",
@@ -208,4 +201,43 @@ const styles = StyleSheet.create({
     height: "100%",
     maxHeight: 450,
   },
+  pageTitle:{
+    flex:4,
+    verticalAlign:'middle',
+    fontSize:30, 
+    fontWeight: "bold",
+    color: "deepskyblue",
+    textAlign:'center',
+    textAlignVertical:'center'
+
+
+  },
+  btnAdd:{
+    flex:1,
+    verticalAlign:'middle',
+    fontSize:40, 
+    fontWeight: "bold",
+    color: "#032757",
+    textAlign:'center'
+  },
+  footer:{
+    flexDirection: "column",
+    gap:5, 
+    verticalAlign:'bottom',height:'15%'
+
+
+
+
+  },
+  button:{
+    flex:1,
+
+    },
+  listado:{
+     flexDirection: "column",
+     height:'70%'
+
+
+  }
+
 });
