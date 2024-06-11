@@ -1,4 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { router, usePathname } from "expo-router";
+import { useEffect, useState } from "react";
 
 interface NoteCardProps {
   title: string;
@@ -6,9 +9,12 @@ interface NoteCardProps {
 }
 const NoteCard = ({ title, time }: NoteCardProps) => {
   return (
-    <TouchableOpacity style={styles.mainContainerCard}>
-       <Text style={styles.cardTime}> {time}</Text>
-      <Text style={styles.cardTitle}>{title}</Text>
+    <TouchableOpacity style={styles.mainContainerCard} onPress={() => router.push("/addNote")}>
+      
+      
+       <Text style={styles.cardTime}>                              
+        {time}</Text>
+      <Text style={styles.cardTitle}><Ionicons name="pencil-sharp"/>  {title}</Text>
     </TouchableOpacity>
   );
 };

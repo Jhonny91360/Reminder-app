@@ -1,5 +1,6 @@
 import { Note } from "@/interfaces/interfaces";
 import * as SQLite from "expo-sqlite";
+import { number } from "yup";
 
 export const initializeDB = async () => {
   const db = await SQLite.openDatabaseAsync("reminderDB");
@@ -36,4 +37,20 @@ export const addNote = async (title: string, description: string) => {
     [title, description]
   );
   console.log(result.lastInsertRowId, result.changes);
+};
+export const getById= async (idnote:number )=> {
+    const db = await SQLite.openDatabaseAsync("reminderDB");
+    const allRows: Note[] = await db.getAllAsync("SELECT * FROM note where id="+idnote);
+      return allRows;
+    
+  
+
+  // if (allRows.length) {
+  //   // for (const row of allRows) {
+  //   //   console.log(row);
+  //   // }
+  //   console.log("Resultado: ", allRows);
+  // } else {
+  //   console.log("No hay resultados");
+  // }
 };
