@@ -47,13 +47,18 @@ export default function TabTwoScreen() {
     <View style={styles.mainContainer}>
       <View style={styles.header}>
         <Text style={styles.pageTitle}>Notas en progreso</Text>
-        <Ionicons name="add-circle-outline" style={styles.btnAdd} onPress={() => router.push("/addNote") }/>
+        <Ionicons
+          name="add-circle-outline"
+          style={styles.btnAdd}
+          onPress={() => router.push("/addNote")}
+        />
       </View>
       <ScrollView style={styles.cardsContainer}>
         {notes?.map((note) => {
-              console.log("bd: "+note.id);
+          console.log("bd: " + note.id);
           return (
             <NoteCard
+              key={note.id}
               idNote={note.id}
               title={note.title}
               time={note.description}
@@ -72,8 +77,8 @@ export default function TabTwoScreen() {
           onPress={() => {
             deleteAllNotes();
             getNotes();
-            }}
-            />
+          }}
+        />
       </View>
     </View>
     // <ParallaxScrollView
@@ -191,9 +196,9 @@ const styles = StyleSheet.create({
   },
   header: {
     flexDirection: "row",
-    justifyContent:'space-between',
-    height:'10%', 
-    verticalAlign:'middle'
+    justifyContent: "space-between",
+    height: "10%",
+    verticalAlign: "middle",
   },
   cardsContainer: {
     display: "flex",
@@ -202,43 +207,34 @@ const styles = StyleSheet.create({
     height: "100%",
     maxHeight: 450,
   },
-  pageTitle:{
-    flex:4,
-    verticalAlign:'middle',
-    fontSize:30, 
+  pageTitle: {
+    flex: 4,
+    verticalAlign: "middle",
+    fontSize: 30,
     fontWeight: "bold",
     color: "deepskyblue",
-    textAlign:'center',
-    textAlignVertical:'center'
-
-
+    textAlign: "center",
+    textAlignVertical: "center",
   },
-  btnAdd:{
-    flex:1,
-    verticalAlign:'middle',
-    fontSize:40, 
+  btnAdd: {
+    flex: 1,
+    verticalAlign: "middle",
+    fontSize: 40,
     fontWeight: "bold",
     color: "#032757",
-    textAlign:'center'
+    textAlign: "center",
   },
-  footer:{
+  footer: {
     flexDirection: "column",
-    gap:5, 
-    verticalAlign:'bottom',height:'15%'
-
-
-
-
+    gap: 5,
+    verticalAlign: "bottom",
+    height: "15%",
   },
-  button:{
-    flex:1,
-
-    },
-  listado:{
-     flexDirection: "column",
-     height:'70%'
-
-
-  }
-
+  button: {
+    flex: 1,
+  },
+  listado: {
+    flexDirection: "column",
+    height: "70%",
+  },
 });
