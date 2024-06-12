@@ -51,9 +51,10 @@ export default function TabTwoScreen() {
       </View>
       <ScrollView style={styles.cardsContainer}>
         {notes?.map((note) => {
+              console.log("bd: "+note.id);
           return (
             <NoteCard
-              key={note.id}
+              idNote={note.id}
               title={note.title}
               time={note.description}
             />

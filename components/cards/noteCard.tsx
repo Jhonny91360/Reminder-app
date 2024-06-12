@@ -1,19 +1,35 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Pressable,StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { router, usePathname } from "expo-router";
-import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";  
 
 interface NoteCardProps {
+  idNote: number;
   title: string;
   time: string;
 }
-const NoteCard = ({ title, time }: NoteCardProps) => {
+const NoteCard = ({idNote, title, time }:NoteCardProps) => {
   return (
-    <TouchableOpacity style={styles.mainContainerCard} onPress={() => router.push("/addNote")}>
-      
-      
-       <Text style={styles.cardTime}>                              
-        {time}</Text>
+    <TouchableOpacity style={styles.mainContainerCard}   onPress={() => 
+            
+      router.push({
+        pathname:"/editNote",
+        params:{idNota:idNote},
+      })
+    
+    } >
+      <Pressable
+        onPress={() => 
+            
+          router.push({
+            pathname:"/Reminder-app/components/cards/noteCard.tsx",
+            params:{idNota:idNote},
+          })
+        
+        }
+      />
+
+       <Text style={styles.cardTime}>{idNote}:  {time}</Text>
       <Text style={styles.cardTitle}><Ionicons name="pencil-sharp"/>  {title}</Text>
     </TouchableOpacity>
   );
