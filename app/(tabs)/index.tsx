@@ -38,7 +38,7 @@ export default function HomeScreen() {
       <View style={styles.buttonContainer}>
         <Button
           title="Entrar"
-          color={"#032757"}
+          color={"deepskyblue"}
           onPress={() => router.push("/notes")}
         ></Button>
       </View>
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "80%",
-    borderRadius: 10,
+    borderRadius: 5,
     overflow: "hidden",
   },
 });

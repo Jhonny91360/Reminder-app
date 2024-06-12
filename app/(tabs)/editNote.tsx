@@ -1,6 +1,7 @@
+import { useLocalSearchParams } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { addNote } from "@/utils/dbFunctions/crud";
-import { router } from "expo-router";
+import { router} from "expo-router";
 import { FormikProvider, useFormik } from "formik";
 import { useEffect, useState, useRef } from "react";
 import {
@@ -27,12 +28,17 @@ Notifications.setNotificationHandler({
 });
 
 interface FormValues {
+
   title: string;
   description: string;
 }
 
-const AddNote = () => {
-  const [key, setKey] = useState(0);
+const editNote = () => {
+    console.log("entra");
+  const {idNota}=useLocalSearchParams();
+  console.log("entra1");
+  console.log("Entrando al idNota:"+{idNota});
+  const [id, setKey] = useState(0);
   const [date, setDate] = useState(new Date());
 
   //notificaciones
@@ -72,6 +78,7 @@ const AddNote = () => {
 
   const newNoteFormik = useFormik<FormValues>({
     initialValues: {
+    
       title: "",
       description: "",
     },
@@ -118,11 +125,11 @@ const AddNote = () => {
   console.log("valores formik: ", newNoteFormik.values);
 
   return (
-    <View style={styles.mainContainer} key={key}>
+    <View style={styles.mainContainer} >
       
       <FormikProvider value={newNoteFormik}>
       <View style={styles.header}>
-        <Text style={styles.pageTitle}>Nueva nota</Text>
+        <Text style={styles.pageTitle}>Editar nota:  {idNota}</Text>
       </View>
         <TextInput
           style={styles.inputText}
@@ -253,4 +260,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddNote;
+export default editNote;
