@@ -18,17 +18,6 @@ const NoteCard = ({idNote, title, time }:NoteCardProps) => {
       })
     
     } >
-      <Pressable
-        onPress={() => 
-            
-          router.push({
-            pathname:"/Reminder-app/components/cards/noteCard.tsx",
-            params:{idNota:idNote},
-          })
-        
-        }
-      />
-
        <Text style={styles.cardTime}>{idNote}:  {time}</Text>
       <Text style={styles.cardTitle}><Ionicons name="pencil-sharp"/>  {title}</Text>
     </TouchableOpacity>
