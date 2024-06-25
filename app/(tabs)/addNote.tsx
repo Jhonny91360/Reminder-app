@@ -6,6 +6,7 @@ import { useEffect, useState, useRef } from "react";
 import {
   Alert,
   Button,
+  Image,
   Platform,
   StyleSheet,
   Text,
@@ -17,6 +18,8 @@ import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
 import Constants from "expo-constants";
 import DatePickerComponent from "@/components/datePicker/datePicker";
+import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -45,13 +48,27 @@ const AddNote = () => {
   >(undefined);
   const notificationListener = useRef<Notifications.Subscription>();
   const responseListener = useRef<Notifications.Subscription>();
+  const [imageUri, setImageUri] = useState("");
+  const [savedImageUri, setSavedImageUri] = useState("");
 
   const onSubmit = async () => {
+    let imageURL = "";
     if (!newNoteFormik.values.title || !newNoteFormik.values.description)
       return Alert.alert("Debe llenar los campos");
+    if (!date) {
+      return Alert.alert("Debe seleccionar fecha y hora");
+    }
+
+    if (imageUri) {
+      const response = await saveImage(imageUri);
+      response ? (imageURL = response) : null;
+    }
+
     const response = await addNote(
       newNoteFormik.values.title,
-      newNoteFormik.values.description
+      newNoteFormik.values.description,
+      date.toISOString(),
+      imageURL ?? null
     );
     console.log("LA repuesta del crud: ", response);
     schedulePushNotification(
@@ -68,6 +85,8 @@ const AddNote = () => {
     newNoteFormik.values.title = "";
     newNoteFormik.values.description = "";
     setKey((preValue) => preValue + 1);
+    setImageUri("");
+    setSavedImageUri("");
   };
 
   const newNoteFormik = useFormik<FormValues>({
@@ -81,6 +100,45 @@ const AddNote = () => {
     }),
     onSubmit,
   });
+
+  const selectImage = async () => {
+    // Solicitar permisos para acceder a la galería
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      alert("Se requiere permiso para acceder a la galería.");
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled && result.assets && result.assets.length > 0) {
+      const selectedImageUri = result.assets[0].uri;
+      setImageUri(selectedImageUri);
+      console.log("Lo que se va a guardar: ", selectedImageUri);
+    }
+  };
+
+  const saveImage = async (uri: string) => {
+    const fileName = uri.split("/").pop();
+    const newFilePath = `${FileSystem.documentDirectory}${fileName}`;
+
+    try {
+      await FileSystem.copyAsync({
+        from: uri,
+        to: newFilePath,
+      });
+      setSavedImageUri(newFilePath);
+      console.log("Se guardo la imagen en la ruta:", newFilePath);
+      return newFilePath;
+    } catch (error) {
+      console.error("Error saving image:", error);
+      return null;
+    }
+  };
 
   //Useeffect notificaciones
   useEffect(() => {
@@ -116,14 +174,14 @@ const AddNote = () => {
   ///
 
   console.log("valores formik: ", newNoteFormik.values);
+  console.log("fecha seleccionada: ", date);
 
   return (
     <View style={styles.mainContainer} key={key}>
-      
       <FormikProvider value={newNoteFormik}>
-      <View style={styles.header}>
-        <Text style={styles.pageTitle}>Nueva nota</Text>
-      </View>
+        <View style={styles.header}>
+          <Text style={styles.pageTitle}>Nueva nota</Text>
+        </View>
         <TextInput
           style={styles.inputText}
           onChangeText={newNoteFormik.handleChange("title")}
@@ -137,12 +195,32 @@ const AddNote = () => {
           placeholder="Ingrese la Descripcion"
           multiline
         />
-        <View style={{ height: 300 }}>
+        <View style={{ height: 100 }}>
           <DatePickerComponent
             dateProp={date}
             setDateProp={(value: Date) => setDate(value)}
           />
         </View>
+        {imageUri && (
+          <View
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "blueviolet", fontWeight: "bold" }}>
+              Imagen seleccionada:
+            </Text>
+            <Image
+              source={{ uri: imageUri }}
+              style={{ width: 100, height: 100 }}
+            />
+          </View>
+        )}
+
+        <Button title="Select Image" onPress={selectImage} />
+
         <Button title="Guardar" onPress={onSubmit} />
       </FormikProvider>
     </View>
@@ -225,31 +303,29 @@ const styles = StyleSheet.create({
     margin: 12,
     borderWidth: 1,
     padding: 10,
-    borderRadius:5
+    borderRadius: 5,
   },
   inputTextArea: {
     height: 80,
     margin: 12,
     borderWidth: 1,
     padding: 10,
-    borderRadius:5, 
+    borderRadius: 5,
   },
-  pageTitle:{
-    flex:4,
-    verticalAlign:'middle',
-    fontSize:30, 
+  pageTitle: {
+    flex: 4,
+    verticalAlign: "middle",
+    fontSize: 30,
     fontWeight: "bold",
     color: "deepskyblue",
-    textAlign:'center',
-    textAlignVertical:'center'
-
-
+    textAlign: "center",
+    textAlignVertical: "center",
   },
   header: {
     flexDirection: "row",
-    justifyContent:'space-between',
-    height:'10%', 
-    verticalAlign:'middle'
+    justifyContent: "space-between",
+    height: "10%",
+    verticalAlign: "middle",
   },
 });
 

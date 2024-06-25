@@ -61,7 +61,9 @@ export default function TabTwoScreen() {
               key={note.id}
               idNote={note.id}
               title={note.title}
-              time={note.description}
+              description={note.description}
+              imageURL={note.imageURL ?? ""}
+              date={note.date ?? ""}
             />
           );
         })}
