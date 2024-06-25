@@ -19,6 +19,7 @@ import * as Device from "expo-device";
 import Constants from "expo-constants";
 import DatePickerComponent from "@/components/datePicker/datePicker";
 import * as ImagePicker from "expo-image-picker";
+import * as FileSystem from "expo-file-system";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -51,11 +52,23 @@ const AddNote = () => {
   const [savedImageUri, setSavedImageUri] = useState("");
 
   const onSubmit = async () => {
+    let imageURL = "";
     if (!newNoteFormik.values.title || !newNoteFormik.values.description)
       return Alert.alert("Debe llenar los campos");
+    if (!date) {
+      return Alert.alert("Debe seleccionar fecha y hora");
+    }
+
+    if (imageUri) {
+      const response = await saveImage(imageUri);
+      response ? (imageURL = response) : null;
+    }
+
     const response = await addNote(
       newNoteFormik.values.title,
-      newNoteFormik.values.description
+      newNoteFormik.values.description,
+      date.toISOString(),
+      imageURL ?? null
     );
     console.log("LA repuesta del crud: ", response);
     schedulePushNotification(
@@ -105,8 +118,25 @@ const AddNote = () => {
     if (!result.canceled && result.assets && result.assets.length > 0) {
       const selectedImageUri = result.assets[0].uri;
       setImageUri(selectedImageUri);
-      setSavedImageUri(selectedImageUri);
       console.log("Lo que se va a guardar: ", selectedImageUri);
+    }
+  };
+
+  const saveImage = async (uri: string) => {
+    const fileName = uri.split("/").pop();
+    const newFilePath = `${FileSystem.documentDirectory}${fileName}`;
+
+    try {
+      await FileSystem.copyAsync({
+        from: uri,
+        to: newFilePath,
+      });
+      setSavedImageUri(newFilePath);
+      console.log("Se guardo la imagen en la ruta:", newFilePath);
+      return newFilePath;
+    } catch (error) {
+      console.error("Error saving image:", error);
+      return null;
     }
   };
 
@@ -144,6 +174,7 @@ const AddNote = () => {
   ///
 
   console.log("valores formik: ", newNoteFormik.values);
+  console.log("fecha seleccionada: ", date);
 
   return (
     <View style={styles.mainContainer} key={key}>
@@ -187,6 +218,7 @@ const AddNote = () => {
             />
           </View>
         )}
+
         <Button title="Select Image" onPress={selectImage} />
 
         <Button title="Guardar" onPress={onSubmit} />
